@@ -1,0 +1,2 @@
+int openWordsFile ();
+void closeWordsFile ();
