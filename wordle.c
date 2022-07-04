@@ -11,7 +11,10 @@
 #include "wordleVisuals.h"
 #endif
 
+
+
 char WordToGuess[WORD_LENGTH]; 
+char WordPlayer[WORD_LENGTH];
 FILE *listaFile; 
 
 //habre el archivo de palabras a adivinar del wordle
@@ -41,6 +44,39 @@ void getRandWord(){
 //imprime la palabra guardada
 void printWord(){
     printf("%s\n", WordToGuess);
+}
+
+//pide una palabra al jugador requiriendo que sea de5 letras y combirtiendola en mayuscula
+void getPlayerInput(){
+    while(1){
+        printf("Ingrese una palabra de 5 letras: ");
+        scanf( "%s", WordPlayer);
+        printf("\n");
+        if(Is5Letters(WordPlayer)){
+            break;
+        }else{
+            printf("Error: Debe ingresar una palabra de 5 letras.\n");
+        }
+    }
+
+    wordToUpper(WordPlayer);
+    printf("%s\n", WordPlayer);
+}
+
+//cuenta cunatas letras tiene la palabra y verifica si es igual a 5
+int Is5Letters(char *palabra){
+    int counter;
+    for (counter = 0; palabra[counter] != '\0'; ++counter);
+    return (counter == 5);
+}
+
+// transforma todas las minusculas en mayusculas
+void wordToUpper(char *palabra){
+    for(int i = 0; palabra[i] != '\0'; i++){
+        if(ISLOWERC(palabra[i])){
+            TOUPPER(palabra[i]);
+        }
+    }
 }
 
 //borrar despues
@@ -78,10 +114,9 @@ void pruevaLectura (){
 int main(){
     int result = openWordsFile();
     if(result){
-        //recordatorio();
-        //pruevaLectura();
-        getRandWord();
-        printWord();
+        //getPlayerInput();
+        //getRandWord();
+        //printWord();
         closeWordsFile();
     }
 }
