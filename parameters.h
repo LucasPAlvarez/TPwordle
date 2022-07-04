@@ -9,3 +9,8 @@
 
 //tamaño de la palabra en el juego (aunque sea 5 letras necesita el numero 7)
 #define WORD_LENGTH 7
+
+//comprueva si es mayuscula o no
+#define ISLOWERC(a) ((('a' <= (a)) &&( (a) <= 'z'))?1:0)
+//convierte minusculas en mayusculas
+#define TOUPPER(a) ((a) = (char) ((a)-32))
