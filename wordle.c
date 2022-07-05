@@ -79,6 +79,28 @@ void wordToUpper(char *palabra){
     }
 }
 
+int *CheckPlayerGuess(char *guess, char *hiddenWord){
+    static int result[5] = {-1,-1,-1,-1,-1};
+    
+    for(int i = 0; i<5; i++){
+        if(guess[i] == hiddenWord[i]){
+            result[i] = LETTERCORRECT;
+            continue;
+        }
+        for(int j = 0; j<5; j++){
+            if(guess[i] == hiddenWord[j]){
+                result[i] = LETTERINWORD;
+                continue;
+            }
+        }
+        if(result[i] == -1){
+            result[i] = LETTERMISSING;
+        }
+    }
+
+    return result;
+}
+
 //borrar despues
 void recordatorio(){
     if(1){
@@ -86,34 +108,20 @@ void recordatorio(){
     }
 }
 
-//prueva para leer el archivo de palabras, borrar antes de terminar el tp
-void pruevaLectura (){
-    char palabra[7]; //= (char *)malloc(sizeof(char)*10);
-    
-    //fgets(palabra, 10, listaFile);
-    //printf("%d \n" , feof(listaFile));
-    /*while(! feof(listaFile)){
-        //printf("entra\n");
-        //fread(palabra, sizeof(char), 7, listaFile);
-        fgets(palabra, 10, listaFile);
-        printf("%s - ", palabra);
-        printf("Position: %ld\n", ftell(listaFile));
+void checkTest(){
+    getRandWord();
+    printWord();
+    getPlayerInput();
+    int* result = CheckPlayerGuess(WordPlayer, WordToGuess);
+    for(int i = 0; i<5; i++){
+        printf("La letra a adivinar es: %c  y adivino: %c. Elresultado fue: %d\n", WordToGuess[i], WordPlayer[i], result[i]);
     }
-    printf("exit 88888\n");*/
-
-    //rewind(listaFile);
-    fseek(listaFile, 203, SEEK_SET);
-    fgets(palabra, 10, listaFile);
-    for (int i = 0; i < 5; i++){
-        printf("%c -\n", (char)palabra[i]);
-    }
-    
-    //free(palabra);
-    
 }
+
 int main(){
     int result = openWordsFile();
     if(result){
+        checkTest();
         //getPlayerInput();
         //getRandWord();
         //printWord();
