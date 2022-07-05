@@ -15,6 +15,9 @@
 
 char WordToGuess[WORD_LENGTH]; 
 char WordPlayer[WORD_LENGTH];
+
+char GridWordStorege[COLS][ROWS];
+char *GridColorStorege[COLS][ROWS];
 FILE *listaFile; 
 
 //habre el archivo de palabras a adivinar del wordle
@@ -46,21 +49,17 @@ void printWord(){
     printf("%s\n", WordToGuess);
 }
 
-//pide una palabra al jugador requiriendo que sea de5 letras y combirtiendola en mayuscula
-void getPlayerInput(){
-    while(1){
-        printf("Ingrese una palabra de 5 letras: ");
-        scanf( "%s", WordPlayer);
-        printf("\n");
-        if(Is5Letters(WordPlayer)){
-            break;
-        }else{
-            printf("Error: Debe ingresar una palabra de 5 letras.\n");
-        }
+//toma una palabra requiriendo que sea de 5 letras y combirtiendola en mayuscula
+int getPlayerInput(){
+    scanf( "%s", WordPlayer);
+    printf("\n");
+    if(!Is5Letters(WordPlayer)){
+        return 0;
     }
 
     wordToUpper(WordPlayer);
-    printf("%s\n", WordPlayer);
+    //printf("%s\n", WordPlayer);
+    return 1;
 }
 
 //cuenta cunatas letras tiene la palabra y verifica si es igual a 5
@@ -79,6 +78,7 @@ void wordToUpper(char *palabra){
     }
 }
 
+//compara la palabra del jugador y guarda el resultado
 int *CheckPlayerGuess(char *guess, char *hiddenWord){
     static int result[5] = {-1,-1,-1,-1,-1};
     
@@ -101,11 +101,49 @@ int *CheckPlayerGuess(char *guess, char *hiddenWord){
     return result;
 }
 
+//inicializa los valores de las grillas a mostrar
+void initializeGrid(){
+    for (int i = 0; i < COLS; i++){
+        for(int j = 0; j < ROWS; j++){
+            GridWordStorege[i][j] = '*';
+            GridColorStorege[i][j] = DEFAULT;
+        }
+    }
+}
+
+//imprime l grilla
+void printGrid(){
+    for (int i = 0; i < COLS; i++){
+        for(int j = 0; j < ROWS; j++){
+            printf("%s %c ", GridColorStorege[i][j], GridWordStorege[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+//pide al jugaro que ingrese una palabra de 5 letras
+void askForPlayerInput(){
+    while(1){
+        printf("Ingrese una palabra de 5 letras: ");
+        if(getPlayerInput()){
+            break;
+        }
+        printf("Error: Debe ingresar una palabra de 5 letras.\n");
+    }
+}
+
+//---------------------------------------------------
+
 //borrar despues
 void recordatorio(){
     if(1){
         printf("entra\n");
     }
+}
+
+void comCheck(){
+    getchar();
+    system("clear");
 }
 
 void checkTest(){
@@ -121,7 +159,9 @@ void checkTest(){
 int main(){
     int result = openWordsFile();
     if(result){
-        checkTest();
+        initializeGrid();
+        printGrid();
+        askForPlayerInput();
         //getPlayerInput();
         //getRandWord();
         //printWord();
