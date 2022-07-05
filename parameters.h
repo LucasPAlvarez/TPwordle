@@ -14,3 +14,8 @@
 #define ISLOWERC(a) ((('a' <= (a)) &&( (a) <= 'z'))?1:0)
 //convierte minusculas en mayusculas
 #define TOUPPER(a) ((a) = (char) ((a)-32))
+
+//defines para el estado de comparacion de plalabras
+#define LETTERCORRECT 2
+#define LETTERINWORD 1
+#define LETTERMISSING 0
