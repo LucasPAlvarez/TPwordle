@@ -1,0 +1,2 @@
+void printGrid();
+void askForPlayerInput();
