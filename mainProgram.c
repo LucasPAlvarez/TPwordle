@@ -2,12 +2,14 @@
 #include "wordle.c"
 
 int main(){
-    //inicializar variables
+    ClearScreen();
+    int result = openWordsFile();
+    if(result){
+        playGame();
 
-    //loop del juego
-
-    //destruir cualquier alocacion de memoria
-
+        //end of program
+        closeWordsFile();
+    }
 
     return 0;
 }
