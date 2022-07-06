@@ -5,5 +5,6 @@ void printWord();
 int getPlayerInput();
 int Is5Letters(char *palabra);
 void wordToUpper(char *palabra);
-int *CheckPlayerGuess(char *guess, char *hiddenWord);
+int *CheckPlayerGuess(int turn);
+int checkResult(int *result);
 void initializeGrid();
