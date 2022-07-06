@@ -79,16 +79,19 @@ void wordToUpper(char *palabra){
 }
 
 //compara la palabra del jugador y guarda el resultado
-int *CheckPlayerGuess(char *guess, char *hiddenWord){
+int *CheckPlayerGuess(int turn){
     static int result[5] = {-1,-1,-1,-1,-1};
     
     for(int i = 0; i<5; i++){
-        if(guess[i] == hiddenWord[i]){
+        if(WordPlayer[i] == WordToGuess[i]){
+            GridColorStorege[turn-1][i] = GREEN;
+            GridWordStorege[turn-1][i] = WordPlayer[i];
             result[i] = LETTERCORRECT;
             continue;
         }
         for(int j = 0; j<5; j++){
-            if(guess[i] == hiddenWord[j]){
+            if(WordPlayer[i] == WordToGuess[j]){
+                GridColorStorege[turn-1][i] = YELLOW;
                 result[i] = LETTERINWORD;
                 continue;
             }
@@ -96,9 +99,19 @@ int *CheckPlayerGuess(char *guess, char *hiddenWord){
         if(result[i] == -1){
             result[i] = LETTERMISSING;
         }
+        GridWordStorege[turn-1][i] = WordPlayer[i];
     }
 
     return result;
+}
+
+int checkResult(int *result){
+    for(int i = 0; i<5;i++){
+        if(result[i] == LETTERINWORD || result[i] == LETTERMISSING){
+            return 0;
+        }
+    }
+    return 1;
 }
 
 //inicializa los valores de las grillas a mostrar
@@ -115,7 +128,7 @@ void initializeGrid(){
 void printGrid(){
     for (int i = 0; i < COLS; i++){
         for(int j = 0; j < ROWS; j++){
-            printf("%s %c ", GridColorStorege[i][j], GridWordStorege[i][j]);
+            printf("%s %c %s", GridColorStorege[i][j], GridWordStorege[i][j], DEFAULT);
         }
         printf("\n");
     }
@@ -132,6 +145,11 @@ void askForPlayerInput(){
     }
 }
 
+//limpia la pantalla
+void ClearScreen(){
+    system("clear");
+}
+
 //---------------------------------------------------
 
 //borrar despues
@@ -141,30 +159,36 @@ void recordatorio(){
     }
 }
 
-void comCheck(){
-    getchar();
-    system("clear");
-}
-
-void checkTest(){
+// ------- game ----------
+void playGame(){
+    //initialize variables
+    int turn = 1;
+    int *result; 
     getRandWord();
-    printWord();
-    getPlayerInput();
-    int* result = CheckPlayerGuess(WordPlayer, WordToGuess);
-    for(int i = 0; i<5; i++){
-        printf("La letra a adivinar es: %c  y adivino: %c. Elresultado fue: %d\n", WordToGuess[i], WordPlayer[i], result[i]);
-    }
-}
-
-int main(){
-    int result = openWordsFile();
-    if(result){
-        initializeGrid();
+    initializeGrid();
+    
+    do{
+        //initialize visuals
+        ClearScreen();
         printGrid();
         askForPlayerInput();
-        //getPlayerInput();
-        //getRandWord();
-        //printWord();
-        closeWordsFile();
+
+        //compare the input
+        result = CheckPlayerGuess(turn);
+
+        if(checkResult(result)){
+            //print wining message and exit loop
+            ClearScreen();
+            printf("--- Felicidades ---\n\nAdivinaste la palabras.\n\n");
+            break;
+        }
+
+        turn++;
+    }while(turn <= 5);
+    if(turn == 6){
+        ClearScreen();
+        //print losing message and show the word
+        printf("--- Perdiste ---\n\nNo Adivinaste, la palabra era: %s\n\n",WordToGuess);
     }
+    printGrid();
 }
