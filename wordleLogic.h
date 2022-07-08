@@ -1,3 +1,13 @@
+//struct para guardar los datos de cada ronda
+struct Round
+{
+    int nro;
+    char word[6];
+    int scoore;
+    int wasWon;
+};
+
+//funciones
 int openWordsFile ();
 void closeWordsFile ();
 void getRandWord();
@@ -14,5 +24,9 @@ void FSstart();
 void scooreStart();
 void calculateScore(int *result, int turn);
 int PedirCantPartidas();
+void CreateSession();
+void SaveRound(int roundResult);
+void PrintRound(struct Round round);
+void PrintSesion();
 void playRound();
 void playGame();
