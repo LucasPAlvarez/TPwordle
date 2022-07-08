@@ -26,6 +26,8 @@ char gridWordStorege[COLS][ROWS];
 char *GridColorStorege[COLS][ROWS];
 FILE *listaFile;
 
+struct Round *Session;
+
 int partActual, partTotal;
 
 //habre el archivo de palabras a adivinar del wordle
@@ -187,6 +189,41 @@ int PedirCantPartidas(){
     return 0;
 }
 
+
+//manejadres de secion
+void InitSession(){
+    Session = malloc(sizeof(struct Round) * partTotal);
+}
+
+void FreeSession(){
+    free(Session);
+}
+
+void SaveRound(int roundResult){
+    Session[partActual-1].nro = partActual;
+    for(int i = 0; i < 5; i++){
+       Session[partActual-1].word[i] = WordToGuess[i]; 
+    }
+    Session[partActual-1].word[5] = '\0';
+    Session[partActual-1].scoore= scoore;
+    Session[partActual-1].wasWon = roundResult;
+}
+
+void PrintRound(struct Round round){
+    printf("Ronda: %d   Palabra a adivinar: %s   Puntaje: %d", round.nro, round.word, round.scoore);
+    if(round.wasWon){
+        printf("  La partida fue ganada.\n");
+    }else{
+        printf("  La partida fue perdida.\n");
+    }
+}
+
+void PrintSesion(){
+    for(int i = 0; i < partActual; i++){
+        PrintRound(Session[i]);
+    }
+}
+
 // -------------- funciones visuales -------------------
 
 //imprime l grilla
@@ -251,6 +288,7 @@ void printScoore(){
 // ------- game ----------
 void playGame(){
     int again = 1;
+    InitSession();
     InitialMenu();
     do{
         playRound();
@@ -261,6 +299,9 @@ void playGame(){
         again = askContinuar();
         partActual++;
     }while(again);
+
+    PrintSesion();
+    FreeSession();
 
 }
 
@@ -273,6 +314,7 @@ void playRound(){
     scooreStart();
     FSstart();
     resInit();
+    
     do{
         //initialize visuals
         ClearScreen();
@@ -294,6 +336,7 @@ void playRound(){
             printf("--- Felicidades ---\n\nAdivinaste la palabra. Era ");
             printWord();
             printf("\n\n");
+            SaveRound(1);
             break;
         }
 
@@ -305,7 +348,9 @@ void playRound(){
         printHeadder(turn);
         printScoore();
         printf("--- Perdiste ---\n\nNo Adivinaste, la palabra era: %s\n\n",WordToGuess);
+        SaveRound(0);
     }
     printGrid();
+    
     
 }
