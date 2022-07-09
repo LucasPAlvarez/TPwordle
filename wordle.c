@@ -11,24 +11,34 @@
 #include "wordleVisuals.h"
 #endif
 
+//------------------------- Variable -----------------------
 
-
+//palabra a adivinar
 char WordToGuess[WORD_LENGTH]; 
+//palabra dada por el jugador
 char WordPlayer[WORD_LENGTH];
 
 // graba los espacios que fueron encontrados
 int foundSpots[5];
 
+//puntaje
 int scoore;
+//resultado de la comparacion entre palabras
 int result[5];
 
+//variables de grilla donde se guardan las letras y colores
 char gridWordStorege[COLS][ROWS];
 char *GridColorStorege[COLS][ROWS];
+//archivo de palabras
 FILE *listaFile;
 
+//array para guardar todas las seciones que se juegan
 struct Round Session[8];
 
+//guardan el total de partidas y la partida que se esta jugando en este momento
 int partActual, partTotal;
+
+//--------------------- Manejo de file ----------------------------------
 
 //habre el archivo de palabras a adivinar del wordle
 int openWordsFile (){
@@ -49,15 +59,39 @@ void closeWordsFile (){
 // consigue una palabra al azar de la lista de palabras
 void getRandWord(){
     srand(time(NULL));
-    int randPos = (rand()%30)* WORD_LENGTH;
-    fseek(listaFile, randPos,SEEK_SET);
-    fgets(WordToGuess, WORD_LENGTH, listaFile);
+    do{
+        int randPos = (rand()%30)* WORD_LENGTH;
+        fseek(listaFile, randPos,SEEK_SET);
+        fgets(WordToGuess, WORD_LENGTH, listaFile);
+        WordToGuess[5] = '\0';
+    }while(CheckUsedWords(WordToGuess));
 }
 
-//imprime la palabra guardada
-void printWord(){
-    printf("%s\n", WordToGuess);
+//chequea si las palabras elejidas por la maquina al azar fueron usdas antes
+int CheckUsedWords(char *palabra){
+    int isUsed = 1;
+    if(partActual > 1){
+        for(int i = 0; i < partActual-1; i++){
+            for(int j = 0; j<5; j++){
+                if(Session[i].word[j] != palabra[j]){
+                    isUsed = 0;
+                    break;
+                }
+            }
+            if(isUsed){
+                //printf("La palabra %s, fue usada en la ronda %d\n", palabra, i+1);
+                return 1;
+            }else{
+                //printf("la palabra %s, no fue usada en la ronda %d\n", palabra, i+1);
+                isUsed = 1;
+            }
+        }
+    }
+    return 0;
 }
+
+//----------------------      --------------------------
+
 //elimina los restos en caso de un stdin largo 
 void garbegeCollector(){
     char *garbege;
@@ -93,7 +127,7 @@ void wordToUpper(char *palabra){
         }
     }
 }
-
+//Inicializa el arreglo de resultados
 void resInit(){
     for(int i = 0; i<5; i++){
         result[i] = -1;
@@ -126,6 +160,7 @@ int *CheckPlayerGuess(int turn){
     return result;
 }
 
+//chequea si se an adivinado todas las letras
 int checkResult(int *result){
     for(int i = 0; i<5;i++){
         if(result[i] == LETTERINWORD || result[i] == LETTERMISSING){
@@ -157,6 +192,7 @@ void scooreStart(){
     scoore = 5000;
 }
 
+//calcula y actualiza el puntaje
 void calculateScore(int *result, int turn){
     if(checkResult(result)){
         if(turn == 1){
@@ -180,6 +216,7 @@ void calculateScore(int *result, int turn){
     }
 }
 
+// logica del input al pedir cantidad de partidas a jugar al jugador
 int PedirCantPartidas(){
     scanf("%d",&partTotal);
     if(partTotal <= 8 && partTotal > 0){
@@ -189,8 +226,9 @@ int PedirCantPartidas(){
     return 0;
 }
 
+//--------- manejadores de sesion -----------------------
 
-//manejadres de secion
+// guarda los resultados de cada ronda en la sesion
 void SaveRound(int roundResult){
     Session[partActual-1].nro = partActual;
     for(int i = 0; i < 5; i++){
@@ -201,6 +239,7 @@ void SaveRound(int roundResult){
     Session[partActual-1].wasWon = roundResult;
 }
 
+// imprime la ronda dada
 void PrintRound(struct Round round){
     printf("Ronda: %d   Palabra a adivinar: %s   Puntaje: %d", round.nro, round.word, round.scoore);
     if(round.wasWon){
@@ -210,12 +249,14 @@ void PrintRound(struct Round round){
     }
 }
 
+//imprime toda la sesion
 void PrintSesion(){
     for(int i = 0; i < partActual; i++){
         PrintRound(Session[i]);
     }
 }
 
+//busca en la sesion la ronda con el puntaje mas alto y lo imprime
 void PrintHighScoore(){
     int nroPartida = -1, highscoore = -1;
     for (int i = 0; i< partActual; i++){
@@ -227,6 +268,7 @@ void PrintHighScoore(){
     printf("En la partida %d tubo el mayor puntaje, con una puntuacion de %d\n", nroPartida, highscoore);
 }
 
+//busca en la sesion la ronda con el puntaje mas bajo y lo imprime
 void PrintLowScoore(){
     int nroPartida = -1, lowscoore = 10001;
     for (int i = 0; i< partActual; i++){
@@ -239,6 +281,7 @@ void PrintLowScoore(){
 
 }
 
+// calcula e imprime el promedio de las rondas ganadas
 void PrintAveregeScore(){
     int sumatemp = 0, cant = 0;
     for (int i = 0; i< partActual; i++){
@@ -255,6 +298,11 @@ void PrintAveregeScore(){
 }
 
 // -------------- funciones visuales -------------------
+
+//imprime la palabra guardada
+void printWord(){
+    printf("%s\n", WordToGuess);
+}
 
 //imprime l grilla
 void printGrid(){
@@ -282,6 +330,7 @@ void ClearScreen(){
     system("clear");
 }
 
+//menu inicial para pedir cuantas rondas desea jugar en esta sesion
 void InitialMenu(){
     printf("Bienvenidos al juego de Wordle.\n\nCUantas partidas desea jugar (el maximo son 8):");
     while(1){
@@ -292,10 +341,12 @@ void InitialMenu(){
     }
 }
 
+//imprime la partida y ronda en la que esta el juego
 void printHeadder(int turno){
     printf("Partida %d de %d            Turno %d\n\n", partActual, partTotal, turno);
 }
 
+//pregunta al jugador si desea seguir jugando o no
 int askContinuar(){
     while(1){
         char resp;
@@ -310,12 +361,14 @@ int askContinuar(){
         printf("\nDeve ingresar Y para si o N para no. Porfavor intentelo de nuevo");
     }
 }
-
+//imprime el puntaje en pantalla
 void printScoore(){
     printf("Scoore: %d\n\n", scoore);
 }
 
-// ------- game ----------
+// --------------    game     -----------------
+
+// maneja el juego
 void playGame(){
     int again = 1;
     InitialMenu();
@@ -326,8 +379,9 @@ void playGame(){
         }
         garbegeCollector();
         again = askContinuar();
-        printf("check :%d\n", Session[partActual-1].scoore);
-        partActual++;
+        if(again){
+            partActual++;
+        }
     }while(again);
 
     PrintSesion();
@@ -337,7 +391,7 @@ void playGame(){
 
 }
 
-
+//maneja rondas individuales
 void playRound(){
     //initialize variables
     int turn = 1;
