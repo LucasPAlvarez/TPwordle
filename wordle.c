@@ -26,7 +26,7 @@ char gridWordStorege[COLS][ROWS];
 char *GridColorStorege[COLS][ROWS];
 FILE *listaFile;
 
-struct Round *Session;
+struct Round Session[8];
 
 int partActual, partTotal;
 
@@ -191,21 +191,13 @@ int PedirCantPartidas(){
 
 
 //manejadres de secion
-void InitSession(){
-    Session = malloc(sizeof(struct Round) * partTotal);
-}
-
-void FreeSession(){
-    free(Session);
-}
-
 void SaveRound(int roundResult){
     Session[partActual-1].nro = partActual;
     for(int i = 0; i < 5; i++){
        Session[partActual-1].word[i] = WordToGuess[i]; 
     }
     Session[partActual-1].word[5] = '\0';
-    Session[partActual-1].scoore= scoore;
+    Session[partActual-1].scoore = scoore; 
     Session[partActual-1].wasWon = roundResult;
 }
 
@@ -221,6 +213,44 @@ void PrintRound(struct Round round){
 void PrintSesion(){
     for(int i = 0; i < partActual; i++){
         PrintRound(Session[i]);
+    }
+}
+
+void PrintHighScoore(){
+    int nroPartida = -1, highscoore = -1;
+    for (int i = 0; i< partActual; i++){
+        if(Session[i].scoore > highscoore){
+            highscoore = Session[i].scoore;
+            nroPartida = Session[i].nro;
+        }
+    }
+    printf("En la partida %d tubo el mayor puntaje, con una puntuacion de %d\n", nroPartida, highscoore);
+}
+
+void PrintLowScoore(){
+    int nroPartida = -1, lowscoore = 10001;
+    for (int i = 0; i< partActual; i++){
+        if(Session[i].scoore < lowscoore){
+            lowscoore = Session[i].scoore;
+            nroPartida = Session[i].nro;
+        }
+    }
+    printf("En la partida %d tubo el mayor puntaje, con una puntuacion de %d\n", nroPartida, lowscoore);
+
+}
+
+void PrintAveregeScore(){
+    int sumatemp = 0, cant = 0;
+    for (int i = 0; i< partActual; i++){
+        if(Session[i].wasWon){
+            sumatemp += Session[i].scoore;
+            cant++;
+        }
+    }
+    if(cant != 0){
+        printf("En la partida el promedio del puntaje de sus rondas ganadas fue %.2d\n", sumatemp/cant);
+    }else{
+        printf("No ah ganado ninguna partida\n");
     }
 }
 
@@ -288,7 +318,6 @@ void printScoore(){
 // ------- game ----------
 void playGame(){
     int again = 1;
-    InitSession();
     InitialMenu();
     do{
         playRound();
@@ -297,11 +326,14 @@ void playGame(){
         }
         garbegeCollector();
         again = askContinuar();
+        printf("check :%d\n", Session[partActual-1].scoore);
         partActual++;
     }while(again);
 
     PrintSesion();
-    FreeSession();
+    PrintHighScoore();
+    PrintLowScoore();
+    PrintAveregeScore();
 
 }
 
