@@ -2,7 +2,7 @@
 struct Round
 {
     int nro;
-    char word[6];
+    char word[7];
     int scoore;
     int wasWon;
 };
@@ -11,6 +11,7 @@ struct Round
 int openWordsFile ();
 void closeWordsFile ();
 void getRandWord();
+int CheckUsedWords(char *palabra);
 void printWord();
 void garbegeCollector();
 int getPlayerInput();
