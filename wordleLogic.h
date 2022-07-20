@@ -2,7 +2,7 @@
 struct Round
 {
     int nro;
-    char word[7];
+    char word[6];
     int scoore;
     int wasWon;
 };
