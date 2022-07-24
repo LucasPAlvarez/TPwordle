@@ -2,6 +2,6 @@ void printGrid();
 void askForPlayerInput();
 void ClearScreen();
 void InitialMenu();
-void printHeadder(int turno);
+void printHeader(int turno);
 int askContinuar();
-void printScoore();
+void printScore();

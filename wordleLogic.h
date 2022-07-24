@@ -3,7 +3,7 @@ struct Round
 {
     int nro;
     char word[6];
-    int scoore;
+    int score;
     int wasWon;
 };
 
@@ -22,14 +22,14 @@ int *CheckPlayerGuess(int turn);
 int checkResult(int *result);
 void initializeGrid();
 void FSstart();
-void scooreStart();
+void scoreStart();
 void calculateScore(int *result, int turn);
 int PedirCantPartidas();
 void SaveRound(int roundResult);
 void PrintRound(struct Round round);
 void PrintSesion();
-void PrintHighScoore();
-void PrintLowScoore();
+void PrintHighScore();
+void PrintLowScore();
 void PrintAveregeScore();
 void playRound();
 void playGame();
